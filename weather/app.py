@@ -2,7 +2,7 @@ from flask import Flask, render_template
 import folium
 
 app = Flask(__name__)
-
+#test
 @app.route('/')
 def index():
     # Create a map centered at a specific location

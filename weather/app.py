@@ -1,8 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import folium
 
+onclickmarkerkoordinaatit = {}
+onclickmarkerorder = 0
+
 app = Flask(__name__)
-#test
+
 @app.route('/')
 def index():
     # Create a map centered at a specific location
@@ -13,6 +16,25 @@ def index():
 
     # Render the HTML page containing the map
     return render_template('index.html')
+
+@app.route('/klikkikoordinaatit', methods=['POST'])
+def map():
+    global onclickmarkerorder
+
+    if request.method == 'POST':
+        #tätä pitää kasvattaa, että tiedetään klikattujen markerien koordinaattien järjestys
+        onclickmarkerorder += 1
+
+        lat = request.form['lat']
+        lon = request.form['lon']
+        print("Koordinaatit - Latitude:", lat, "Longitude:", lon)
+
+        #tallennetaan lat ja lon sanakirjaan
+        onclickmarkerkoordinaatit[onclickmarkerorder] = {'latitude': lat, 'longitude': lon}
+        print(onclickmarkerkoordinaatit)
+        return 'Vastaanotetut koordinaatit - Latitude: {} Longitude: {}'.format(lat, lon)
+    else:
+        return 'Jotain meni vikaan.'
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -12,10 +12,10 @@ def index():
     map_osm = folium.Map(location=[62.791668, 22.841667], zoom_start=12)
 
     # Save the map to a file
-    map_osm.save("templates/index.html")
+    #map_osm.save("templates/index.html")
 
     # Render the HTML page containing the map
-    return render_template('index.html')
+    return render_template('index.html', map=map_osm._repr_html_())
 
 @app.route('/klikkikoordinaatit', methods=['POST'])
 def map():

@@ -1,72 +1,74 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    
-        <script>
-            L_NO_TOUCH = false;
-            L_DISABLE_3D = false;
-        </script>
-    
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_4b22336939ef757ae97d6de7f89896a0 {
-                    position: relative;
-                    width: 100.0%;
-                    height: 100.0%;
-                    left: 0.0%;
-                    top: 0.0%;
-                }
-                .leaflet-container { font-size: 1rem; }
-            </style>
-        
 </head>
+
 <body>
+    <div id="map" style="width: 100%; height: 100%;">
+    <button id="print-button" onclick="printMarkers()">Print Markers</button> <!-- Button to print markers -->
     
+    <script>
+        var map = L.map('map').setView([62.791668, 22.841667], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        //markerit
+        var markers = {};
+        var markerCounter = 0;
+
+        // Event listener for click events on the map
+        map.on('click', function(e) {
+            var lat = e.latlng.lat.toFixed(6);
+            var lon = e.latlng.lng.toFixed(6);
+
+            var markerId = markerCounter; // Generate a unique identifier for the marker
+            var marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup('<b>Coordinates:</b><br>Latitude: ' + lat + '<br>Longitude: ' + lon).openPopup();
+
+            //markerin tiedot talteen
+            markers[markerId] = {
+                lat: lat,
+                lon: lon,
+                marker: marker
+            };
+
+            // Send coordinates to server
+            var formData = new FormData();
+            formData.append('lat', lat);
+            formData.append('lon', lon);
+            fetch('/klikkikoordinaatit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        map.on('popupopen', function(e) {
+            var markerId = Object.keys(markers).find(key => markers[key].marker === e.popup._source);
+            if (markerId) {
+                console.log('Marker ID:', markerId);
+                // You can access marker information from markers[markerId] and display it as needed
+            }
+        });
     
-            <div class="folium-map" id="map_4b22336939ef757ae97d6de7f89896a0" ></div>
-        
+    </script>
+
 </body>
-<script>
-    
-    
-            var map_4b22336939ef757ae97d6de7f89896a0 = L.map(
-                "map_4b22336939ef757ae97d6de7f89896a0",
-                {
-                    center: [62.791668, 22.841667],
-                    crs: L.CRS.EPSG3857,
-                    zoom: 12,
-                    zoomControl: true,
-                    preferCanvas: false,
-                }
-            );
 
-            
-
-        
-    
-            var tile_layer_61fd5eaf2a290a9b4df976100f8d3972 = L.tileLayer(
-                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            );
-        
-    
-            tile_layer_61fd5eaf2a290a9b4df976100f8d3972.addTo(map_4b22336939ef757ae97d6de7f89896a0);
-        
-</script>
 </html>

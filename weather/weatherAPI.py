@@ -1,12 +1,13 @@
 import requests
 import json
 import parse
-
+import json
 
 
 api_key:str = '56cc934fb67645ceb9b113527242901'
 base_url:str = 'http://api.weatherapi.com/v1'
 paketti:dict = {}
+
 
 def get_weather(city:str):
     city = city.capitalize()
@@ -56,5 +57,10 @@ def get_weather(city:str):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching weather data: {e}")
 
+
+def main()->None:
+    print(get_weather("Seinäjoki"))
+
 # pa = get_weather(input())
-print(get_weather("Seinäjoki"))
+if __name__ == "__main__":
+    main()

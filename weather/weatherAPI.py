@@ -1,15 +1,20 @@
+"""
+Toimii kutsumalla "get_weather("KaupunginNimi tai koordinaatit")"
+"""
 import requests
 import json
 import parse
-import json
-
 
 api_key:str = '56cc934fb67645ceb9b113527242901'
 base_url:str = 'http://api.weatherapi.com/v1'
 paketti:dict = {}
 
 
-def get_weather(city:str):
+def get_weather(city:str)-> dict:
+    """ 
+    Palauttaa sanakirjamuodossa olevan paketin josta löytyy säätiedot,
+    haku toimii Kaupungin nimellä tai koordinaateilla
+    """
     city = city.capitalize()
     endpoint = f'/current.json?key={api_key}&q={city}'
     url = base_url + endpoint

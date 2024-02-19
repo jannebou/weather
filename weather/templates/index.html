@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -41,6 +43,20 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        // Oman sijainnin kysyminen -> zoomaus siihen (setView)
+        if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          var latlng = [position.coords.latitude, position.coords.longitude];
+          map_0ffc70348c872e5cb7846e9364ffa288.panTo(latlng);
+          L.marker(latlng).addTo(map_0ffc70348c872e5cb7846e9364ffa288);
+          map_0ffc70348c872e5cb7846e9364ffa288.setView(latlng, 15); // Muutettu myMap.setView(latlng)
+        },
+        (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
+        { timeout: 20000 } // Timeout in ms
+      );
+    }
 
 
         //markerit

@@ -1,5 +1,4 @@
 import requests
-# HUOM! halutaan myös tien pinnan tietoja
 
 # kelikameran kuvat
 def getKoordinaatit(asemaID:str) -> list:

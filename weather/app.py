@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request
 import folium
 import weatherAPI
+import koordinaatitJaKuvat
 
 onclickmarkerkoordinaatit = {}
 onclickmarkerorder = 0
+
+kelikameroidenKoordinaatit = koordinaatitJaKuvat.getKoordinaatit()
+kelikameroidenKuvat = koordinaatitJaKuvat.getKuvat()
 
 app = Flask(__name__)
 

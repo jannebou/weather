@@ -10,55 +10,32 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_0ffc70348c872e5cb7846e9364ffa288 {
-                    position: relative;
-                    width: 100.0%;
-                    height: 100.0%;
-                    left: 0.0%;
-                    top: 0.0%;
-                }
-                .leaflet-container { font-size: 1rem; }
-            </style>
-        
-
 </head>
 
 <body>
     <div id="map" style="width: 100%; height: 100%;">
+    <button id="print-button" onclick="printMarkers()">Print Markers</button> <!-- Button to print markers -->
     
-<script>
+    <script>
         var map = L.map('map').setView([62.791668, 22.841667], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-
         //markerit
         var markers = {};
         var markerCounter = 0;
-
 
         // Event listener for click events on the map
         map.on('click', function(e) {
             var lat = e.latlng.lat.toFixed(6);
             var lon = e.latlng.lng.toFixed(6);
 
-            var markerId = markerCounter; // Generate a unique identifier for the marker
-            var marker = L.marker([lat, lon]).addTo(map);
-            marker.bindPopup('<b>Coordinates:</b><br>Latitude: ' + lat + '<br>Longitude: ' + lon).openPopup();
+            //var markerId = markerCounter; // Generate a unique identifier for the marker
+            var marker = createMarker(lat, lon);
 
             //markerin tiedot talteen
-            markers[markerId] = {
+            markers[markerCounter] = {
                 lat: lat,
                 lon: lon,
                 marker: marker
@@ -79,17 +56,75 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+            markerCounter++;
         });
 
+        /*
         map.on('popupopen', function(e) {
-            var markerId = Object.keys(markers).find(key => markers[key].marker === e.popup._source);
-            if (markerId) {
-                console.log('Marker ID:', markerId);
-                // You can access marker information from markers[markerId] and display it as needed
+            var marker = e.popup._source;
+            var markerId = marker.markerId; // Retrieve the marker's identifier
+            //map.removeLayer(marker);
+        });
+        */
+
+        // Function to fetch weather data for markers from Flask backend
+        function fetchWeatherData(lat, lon, markerCounter, marker) {
+            fetch('/saatiedothaku?lat=${lat}&lon=${lon}')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const weatherInfo = data[markerCounter];
+                    console.log(data);
+                    const popupContent = `
+                        <b>Coordinates:</b><br>
+                        Latitude: ${lat}<br>
+                        Longitude: ${lon}<br>
+                        <b>Säätiedot:</b><br>
+                        Kaupunki: ${weatherInfo.nimi}<br>
+                        Lämpötila: ${weatherInfo['lämpötila']}°C<br>
+                        Tuntuu kuin: ${weatherInfo['tuntuu kuin']}°C<br>
+                        Näkyvyys: ${weatherInfo.näkyvyys} km<br>
+                        Tuulennopeus: ${weatherInfo.tuuli} kph<br>
+                        Tuulen suunta: ${weatherInfo['tuulen suunta']}<br>
+                        Ilmapaine: ${weatherInfo['ilman paine']} mb<br>
+                        Tila: ${weatherInfo.säätila}<br>'
+                        `;
+                    marker.bindPopup(popupContent).openPopup();
+                    marker.openPopup();
+                    //map.removeLayer(marker); // Remove the marker from the map
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+    function createMarker(lat, lon) {
+        var marker = L.marker([lat, lon]).addTo(map);
+        marker.markerId = markerCounter;
+        marker.clickCount = 0;
+
+        function delayedPopup() {
+            marker.bindPopup(fetchWeatherData(lat, lon, markerCounter, marker));
+        }
+
+        // Delay the execution of the bindPopup function
+        setTimeout(delayedPopup, 50); // Adjust the delay time as needed
+        marker.on('click', function(e) {
+
+            marker.clickCount++; // Increment the click counter
+            if (marker.clickCount === 1) {
+                map.removeLayer(marker); // Remove the marker on the second click
+            } else {
+                fetchWeatherData(lat, lon, markerCounter, marker);
             }
         });
+
+        return marker;
+    }
+
     
-</script>
+    </script>
 
 </body>
+
 </html>

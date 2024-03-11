@@ -26,12 +26,31 @@
         var markers = {};
         var markerCounter = 0;
 
-        // Event listener for click events on the map
+        //kelikameroiden tietojen haku, markkerien laitto, ja kuvat popuppiin
+        fetch('/kelikamerat')
+            .then(response => response.json())
+            .then(data => {
+                //käydään data läpi
+                data.forEach(function(item) {
+                    var marker = L.marker([item.lat, item.lon]).addTo(map);
+                    console.log(marker);
+                    //kuvalinkki
+                    var imageUrl = item.image_url[0];
+                    var popupContent = `
+                    <b>Kelikameran kuva:</b><br>
+                    <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">`;
+                    marker.bindPopup(popupContent, {maxWidth: "auto"});
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching coordinates:', error);
+            });
+
+        //kuuntelee milloin karttaa painetaan
         map.on('click', function(e) {
             var lat = e.latlng.lat.toFixed(6);
             var lon = e.latlng.lng.toFixed(6);
 
-            //var markerId = markerCounter; // Generate a unique identifier for the marker
             var marker = createMarker(lat, lon);
 
             //markerin tiedot talteen
@@ -41,7 +60,7 @@
                 marker: marker
             };
 
-            // Send coordinates to server
+            //koordinaattitiedot flaskiin
             var formData = new FormData();
             formData.append('lat', lat);
             formData.append('lon', lon);
@@ -59,15 +78,7 @@
             markerCounter++;
         });
 
-        /*
-        map.on('popupopen', function(e) {
-            var marker = e.popup._source;
-            var markerId = marker.markerId; // Retrieve the marker's identifier
-            //map.removeLayer(marker);
-        });
-        */
-
-        // Function to fetch weather data for markers from Flask backend
+        //haetaan säätiedot koordinaattien perusteella
         function fetchWeatherData(lat, lon, markerCounter, marker) {
             fetch('/saatiedothaku?lat=${lat}&lon=${lon}')
                 .then(response => response.json())
@@ -91,7 +102,7 @@
                         `;
                     marker.bindPopup(popupContent).openPopup();
                     marker.openPopup();
-                    //map.removeLayer(marker); // Remove the marker from the map
+
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -107,11 +118,10 @@
             marker.bindPopup(fetchWeatherData(lat, lon, markerCounter, marker));
         }
 
-        // Delay the execution of the bindPopup function
+        //pitää olla viivettä tai ei toimi
         setTimeout(delayedPopup, 50); // Adjust the delay time as needed
         marker.on('click', function(e) {
-
-            marker.clickCount++; // Increment the click counter
+            marker.clickCount++;
             if (marker.clickCount === 1) {
                 map.removeLayer(marker); // Remove the marker on the second click
             } else {

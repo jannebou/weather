@@ -25,6 +25,20 @@
         //markerit
         var markers = {};
         var markerCounter = 0;
+        var marker = null;
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var latlng = [position.coords.latitude, position.coords.longitude];
+                map.panTo(latlng);
+                L.marker(latlng).addTo(map);
+                map.setView(latlng, 15); // Muutettu myMap.setView(latlng)
+            },
+            (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
+            { timeout: 20000 } // Timeout in ms
+            );
+        }
 
         //kelikameroiden tietojen haku, markkerien laitto, ja kuvat popuppiin
         fetch('/kelikamerat')
@@ -51,7 +65,11 @@
             var lat = e.latlng.lat.toFixed(6);
             var lon = e.latlng.lng.toFixed(6);
 
-            var marker = createMarker(lat, lon);
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = createMarker(lat, lon);
 
             //markerin tiedot talteen
             markers[markerCounter] = {
@@ -86,19 +104,20 @@
                     console.log(data);
                     const weatherInfo = data[markerCounter];
                     console.log(data);
+                    
                     const popupContent = `
                         <b>Coordinates:</b><br>
                         Latitude: ${lat}<br>
                         Longitude: ${lon}<br>
                         <b>Säätiedot:</b><br>
-                        Kaupunki: ${weatherInfo.nimi}<br>
+                        Paikka: ${weatherInfo.nimi}<br>
                         Lämpötila: ${weatherInfo['lämpötila']}°C<br>
                         Tuntuu kuin: ${weatherInfo['tuntuu kuin']}°C<br>
                         Näkyvyys: ${weatherInfo.näkyvyys} km<br>
                         Tuulennopeus: ${weatherInfo.tuuli} kph<br>
                         Tuulen suunta: ${weatherInfo['tuulen suunta']}<br>
                         Ilmapaine: ${weatherInfo['ilman paine']} mb<br>
-                        Tila: ${weatherInfo.säätila}<br>'
+                        Tila: ${weatherInfo.säätila}<br>
                         `;
                     marker.bindPopup(popupContent).openPopup();
                     marker.openPopup();
@@ -122,7 +141,7 @@
         setTimeout(delayedPopup, 50); // Adjust the delay time as needed
         marker.on('click', function(e) {
             marker.clickCount++;
-            if (marker.clickCount === 1) {
+            if (marker.clickCount == 1) {
                 map.removeLayer(marker); // Remove the marker on the second click
             } else {
                 fetchWeatherData(lat, lon, markerCounter, marker);

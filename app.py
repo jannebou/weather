@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import folium, json, parse, requests
+import folium, requests
 import koordinaatitJaKuvat
 
 app = Flask(__name__)

@@ -2,22 +2,31 @@ import requests
 
 # asemoiden IDt
 def getAsemaIDt() -> list:
-    asemaIDt = [
-        "C01674",   # Helsinki, Ruoholahti
-        "C08576",   # Joensuu, Repokallio
-        "C09510",   # Jyväskylä, Vaajakoski
-        "C12547",   # Kajaani
-        "C08538",   # Kuopio, Siikalahti
-        "C10538",   # Lapua
-        "C12504",   # Oulu, Laanila
-        "C14547",   # Rovaniemi, Revontuli_1
-        "C10501",   # Seinäjoki, Nurmo
-        "C04555",   # Tampere, Rautaharkko
-        "C02520",   # Turku, Kärsämäki
-        "C10523"    # Vaasa, Kotiranta
-        ]
+    """
+    Palauttaa listan kelikamera-asemien koordinaateista. Kaupungit luetaan tiedostosta
+    "kaupungit.txt". AsemaIDt ovat listassa samassa järjestyksessä kuin kaupungit.
+    """
+    kaupungit = []
+
+    # luetaan kaupungit tiedostosta "kaupungit.txt"
+    tiedosto = open("weather/kaupungit.txt")
+    for rivi in tiedosto:
+        kaupunki = rivi.split(":")[0].replace("Ã¤","ä")
+        kaupungit.append(kaupunki)
+    tiedosto.close()
+
+    # haetaan kaikkien kelikamera-asemien tiedot Digitrafficilta
+    asemat = "https://tie.digitraffic.fi/api/weathercam/v1/stations"
+    tiedot = requests.get(asemat).json()["features"]
+
+    # haetaan kaupunkeja vastaavat kelikameroiden koordinaatit ja laitetaan ne kyseisen
+    # kaupungin kohdalle (vastaan tuleva ensimmäinen kaupungin kelikamera)
+    for i in range(len(kaupungit)):
+        for j in range(len(tiedot)):
+            if tiedot[j]["properties"]["name"].split("_")[1] == kaupungit[i]:
+                kaupungit[i] = tiedot[j]["id"]
     
-    return asemaIDt
+    return kaupungit
 
 # kelikameroiden koordinaatit
 def getKoordinaatit() -> list:
@@ -30,12 +39,13 @@ def getKoordinaatit() -> list:
 
     for asemaID in asemaIDt:
         asema = "https://tie.digitraffic.fi/api/weathercam/v1/stations/" + asemaID
-        koordinaatit = requests.get(asema).json()["geometry"]["coordinates"]
+        koordinaatit = requests.get(asema).json()["geometry"]["coordinates"][:2]
+        koordinaatit.reverse()
         kaikkiKoordinaatit.append(koordinaatit)
 
     return kaikkiKoordinaatit
 
-# kelikameroiden koordinaatit
+# kelikameroiden kuvat
 def getKuvat() -> list:
     """
     Palauttaa listan, joka sisältää listat kelikameroiden kuvista.

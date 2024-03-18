@@ -11,11 +11,12 @@ api_key:str = '56cc934fb67645ceb9b113527242901'
 base_url:str = 'http://api.weatherapi.com/v1'
 paketti:dict = {}
 
+#hakee nettisivulta json muodossa tiedot ja ne jaetaan sanakirjoihin
 def get_weather(city:str):
     city = city.capitalize()
     endpoint = f'/current.json?key={api_key}&q={city}'
     url = base_url + endpoint
-    
+
     try:
         response = requests.get(url)
         response.raise_for_status() 
@@ -30,6 +31,7 @@ def get_weather(city:str):
         air_pressure = data["current"]["pressure_mb"]
         condition = data["current"]["condition"]["text"]
 
+        # Tietoikkunan pohja
         paketti = {
             "nimi" : name,
             "lämpötila" : temp,
@@ -46,13 +48,13 @@ def get_weather(city:str):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching weather data: {e}")
 
-#view -> command palette -> python interpreter 3.12 jos ei toimi
+#view -> command palette -> python interpreter 3.12 jos ei toimi, Kartta pohja
 @app.route('/')
 def index():
-    # Create a map centered at a specific location
+    # Luo keskitetyn kartan tiettyyn lokaatioon
     map_osm = folium.Map(location=[62.791668, 22.841667], zoom_start=12)
 
-    # Render the HTML page containing the map
+    # Renderöi HTML sivua, jossa on kartta
     return render_template('index.html', map=map_osm._repr_html_())
 
 #tallentaa klikatut koordinaatit
@@ -108,7 +110,7 @@ def kelikamera():
         lon, lat, _ = coord
         data.append({'lat': lat, 'lon': lon, 'image_url': url})
 
-    #print(data)
+    #printtaa datan
     return jsonify(data)
 
 

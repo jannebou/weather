@@ -27,16 +27,36 @@
         var markerCounter = 0;
         var marker = null;
 
+        //käyttäjän sijainti
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-            (position) => {
-                var latlng = [position.coords.latitude, position.coords.longitude];
-                map.panTo(latlng);
-                L.marker(latlng).addTo(map);
-                map.setView(latlng, 15); // Muutettu myMap.setView(latlng)
-            },
-            (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
-            { timeout: 20000 } // Timeout in ms
+                (position) => {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                //lähetä koordinaatit flaskiin(ne on numeroita, joten käytä float tallentamiseen)
+                    fetch(`/kayttajasaatiedot?lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                        //markerin laitto+säätiedot
+                            var latlng = [lat, lon];
+                            var sijaintisaa = `<b>Oma sijainti</b><br>
+                                    <b>${data.nimi}</b><br>
+                                    Lämpötila: ${data.lämpötila}°C<br>
+                                    Tuntuu kuin: ${data["tuntuu kuin"]}°C<br>
+                                    Näkyvyys: ${data.näkyvyys} km<br>
+                                    Tuuli: ${data.tuuli} km/h<br>
+                                    Tuulen suunta: ${data["tuulen suunta"]}<br>
+                                    Ilman paine: ${data["ilman paine"]} mb<br>
+                                    Säätila: ${data.säätila}<br>`;
+                            map.panTo(latlng);
+                            L.marker(latlng).addTo(map).bindPopup(sijaintisaa).openPopup();
+                            map.setView(latlng, 15);
+                        })
+                        .catch(error => console.error('Error fetching weather data:', error));
+                },
+                (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
+                { timeout: 20000 } // Timeout in ms
             );
         }
 
@@ -106,7 +126,7 @@
                     console.log(data);
                     
                     const popupContent = `
-                        <b>Coordinates:</b><br>
+                        <b>Koordinaatit:</b><br>
                         Latitude: ${lat}<br>
                         Longitude: ${lon}<br>
                         <b>Säätiedot:</b><br>
@@ -127,7 +147,8 @@
                     console.error('Error:', error);
                 });
         }
-
+    
+    //tällä tehdään kartalle klikatut markerit
     function createMarker(lat, lon) {
         var marker = L.marker([lat, lon]).addTo(map);
         marker.markerId = markerCounter;

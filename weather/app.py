@@ -55,6 +55,7 @@ def index():
     # Render the HTML page containing the map
     return render_template('index.html', map=map_osm._repr_html_())
 
+#tallentaa klikatut koordinaatit
 @app.route('/klikkikoordinaatit', methods=['POST'])
 def map():
     global onclickmarkerorder
@@ -73,6 +74,14 @@ def map():
     else:
         return 'POST request expected.'
 
+#hakee käyttäjän sijaintiin perustuvat säätiedot
+@app.route('/kayttajasaatiedot', methods=['GET'])
+def userweather():
+    lat = float(request.args.get('lat'))
+    lon = float(request.args.get('lon'))
+    latlon = f"{lat},{lon}"
+    weatherdata = get_weather(latlon)
+    return jsonify(weatherdata)
 
 @app.route('/saatiedothaku', methods=['GET'])
 def weatherinfo():
@@ -82,7 +91,8 @@ def weatherinfo():
     for marker_id, coordinates in onclickmarkerkoordinaatit.items():
         lat_lon_string = f"{coordinates['latitude']},{coordinates['longitude']}"
         weather_data[marker_id] = get_weather(lat_lon_string)
-    print(weather_data)
+
+    #print(weather_data)
     return jsonify(weather_data)
 
 @app.route('/kelikamerat', methods=['GET'])
@@ -96,7 +106,7 @@ def kelikamera():
         lon, lat, _ = coord
         data.append({'lat': lat, 'lon': lon, 'image_url': url})
 
-    print(data)
+    #print(data)
     return jsonify(data)
 
 

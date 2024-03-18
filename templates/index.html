@@ -27,6 +27,17 @@
         var markerCounter = 0;
         var marker = null;
 
+         /* Oman ikonin luonti. Oma sijainti*/
+         var vihreaIkoni = new L.Icon({
+            iconUrl: 'https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Photos.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
+            iconSize: [50, 81],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+            });
+
+
         //käyttäjän sijainti
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -50,7 +61,7 @@
                                     Ilman paine: ${data["ilman paine"]} mb<br>
                                     Säätila: ${data.säätila}<br>`;
                             map.panTo(latlng);
-                            L.marker(latlng).addTo(map).bindPopup(sijaintisaa).openPopup();
+                            L.marker(latlng, {icon: vihreaIkoni}).addTo(map).bindPopup(sijaintisaa).openPopup();
                             map.setView(latlng, 15);
                         })
                         .catch(error => console.error('Error fetching weather data:', error));

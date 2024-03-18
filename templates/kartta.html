@@ -60,12 +60,22 @@
                 }
             );
 
+            /* Oman ikonin luonti. Oma sijainti*/
+            var vihreaIkoni = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+            });
+
             if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           var latlng = [position.coords.latitude, position.coords.longitude];
           map_0ffc70348c872e5cb7846e9364ffa288.panTo(latlng);
-          L.marker(latlng).addTo(map_0ffc70348c872e5cb7846e9364ffa288);
+          L.marker(latlng, {icon: vihreaIkoni}).addTo(map_0ffc70348c872e5cb7846e9364ffa288);
           map_0ffc70348c872e5cb7846e9364ffa288.setView(latlng, 15); // Muutettu myMap.setView(latlng)
         },
         (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),

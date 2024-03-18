@@ -2,8 +2,6 @@
 Toimii kutsumalla "get_weather("KaupunginNimi tai koordinaatit")"
 """
 import requests
-import json
-import parse
 
 api_key:str = '56cc934fb67645ceb9b113527242901'
 base_url:str = 'http://api.weatherapi.com/v1'

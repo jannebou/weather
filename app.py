@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import folium, requests
+import requests
 import koordinaatitJaKuvat
 
 app = Flask(__name__)
@@ -51,11 +51,9 @@ def get_weather(city:str):
 #view -> command palette -> python interpreter 3.12 jos ei toimi, Kartta pohja
 @app.route('/')
 def index():
-    # Luo keskitetyn kartan tiettyyn lokaatioon
-    map_osm = folium.Map(location=[62.791668, 22.841667], zoom_start=12)
 
     # Renderöi HTML sivua, jossa on kartta
-    return render_template('index.html', map=map_osm._repr_html_())
+    return render_template('index.html')
 
 #tallentaa klikatut koordinaatit
 @app.route('/klikkikoordinaatit', methods=['POST'])

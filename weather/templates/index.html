@@ -10,77 +10,95 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_0ffc70348c872e5cb7846e9364ffa288 {
-                    position: relative;
-                    width: 100.0%;
-                    height: 100.0%;
-                    left: 0.0%;
-                    top: 0.0%;
-                }
-                .leaflet-container { font-size: 1rem; }
-            </style>
-        
-
 </head>
 
 <body>
     <div id="map" style="width: 100%; height: 100%;">
+    <button id="print-button" onclick="printMarkers()">Print Markers</button> <!-- Button to print markers -->
     
-<script>
+    <script>
         var map = L.map('map').setView([62.791668, 22.841667], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Oman sijainnin kysyminen -> zoomaus siihen (setView)
-        if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          var latlng = [position.coords.latitude, position.coords.longitude];
-          map_0ffc70348c872e5cb7846e9364ffa288.panTo(latlng);
-          L.marker(latlng).addTo(map_0ffc70348c872e5cb7846e9364ffa288);
-          map_0ffc70348c872e5cb7846e9364ffa288.setView(latlng, 15); // Muutettu myMap.setView(latlng)
-        },
-        (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
-        { timeout: 20000 } // Timeout in ms
-      );
-    }
-
-
         //markerit
         var markers = {};
         var markerCounter = 0;
+        var marker = null;
 
+        //käyttäjän sijainti
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
 
-        // Event listener for click events on the map
+                //lähetä koordinaatit flaskiin(ne on numeroita, joten käytä float tallentamiseen)
+                    fetch(`/kayttajasaatiedot?lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                        //markerin laitto+säätiedot
+                            var latlng = [lat, lon];
+                            var sijaintisaa = `<b>Oma sijainti</b><br>
+                                    <b>${data.nimi}</b><br>
+                                    Lämpötila: ${data.lämpötila}°C<br>
+                                    Tuntuu kuin: ${data["tuntuu kuin"]}°C<br>
+                                    Näkyvyys: ${data.näkyvyys} km<br>
+                                    Tuuli: ${data.tuuli} km/h<br>
+                                    Tuulen suunta: ${data["tuulen suunta"]}<br>
+                                    Ilman paine: ${data["ilman paine"]} mb<br>
+                                    Säätila: ${data.säätila}<br>`;
+                            map.panTo(latlng);
+                            L.marker(latlng).addTo(map).bindPopup(sijaintisaa).openPopup();
+                            map.setView(latlng, 15);
+                        })
+                        .catch(error => console.error('Error fetching weather data:', error));
+                },
+                (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
+                { timeout: 20000 } // Timeout in ms
+            );
+        }
+
+        //kelikameroiden tietojen haku, markkerien laitto, ja kuvat popuppiin
+        fetch('/kelikamerat')
+            .then(response => response.json())
+            .then(data => {
+                //käydään data läpi
+                data.forEach(function(item) {
+                    var marker = L.marker([item.lat, item.lon]).addTo(map);
+                    console.log(marker);
+                    //kuvalinkki
+                    var imageUrl = item.image_url[0];
+                    var popupContent = `
+                    <b>Kelikameran kuva:</b><br>
+                    <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">`;
+                    marker.bindPopup(popupContent, {maxWidth: "auto"});
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching coordinates:', error);
+            });
+
+        //kuuntelee milloin karttaa painetaan
         map.on('click', function(e) {
             var lat = e.latlng.lat.toFixed(6);
             var lon = e.latlng.lng.toFixed(6);
 
-            var markerId = markerCounter; // Generate a unique identifier for the marker
-            var marker = L.marker([lat, lon]).addTo(map);
-            marker.bindPopup('<b>Coordinates:</b><br>Latitude: ' + lat + '<br>Longitude: ' + lon).openPopup();
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = createMarker(lat, lon);
 
             //markerin tiedot talteen
-            markers[markerId] = {
+            markers[markerCounter] = {
                 lat: lat,
                 lon: lon,
                 marker: marker
             };
 
-            // Send coordinates to server
+            //koordinaattitiedot flaskiin
             var formData = new FormData();
             formData.append('lat', lat);
             formData.append('lon', lon);
@@ -95,17 +113,68 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+            markerCounter++;
         });
 
-        map.on('popupopen', function(e) {
-            var markerId = Object.keys(markers).find(key => markers[key].marker === e.popup._source);
-            if (markerId) {
-                console.log('Marker ID:', markerId);
-                // You can access marker information from markers[markerId] and display it as needed
+        //haetaan säätiedot koordinaattien perusteella
+        function fetchWeatherData(lat, lon, markerCounter, marker) {
+            fetch('/saatiedothaku?lat=${lat}&lon=${lon}')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const weatherInfo = data[markerCounter];
+                    console.log(data);
+                    
+                    const popupContent = `
+                        <b>Koordinaatit:</b><br>
+                        Latitude: ${lat}<br>
+                        Longitude: ${lon}<br>
+                        <b>Säätiedot:</b><br>
+                        Paikka: ${weatherInfo.nimi}<br>
+                        Lämpötila: ${weatherInfo['lämpötila']}°C<br>
+                        Tuntuu kuin: ${weatherInfo['tuntuu kuin']}°C<br>
+                        Näkyvyys: ${weatherInfo.näkyvyys} km<br>
+                        Tuulennopeus: ${weatherInfo.tuuli} kph<br>
+                        Tuulen suunta: ${weatherInfo['tuulen suunta']}<br>
+                        Ilmapaine: ${weatherInfo['ilman paine']} mb<br>
+                        Tila: ${weatherInfo.säätila}<br>
+                        `;
+                    marker.bindPopup(popupContent).openPopup();
+                    marker.openPopup();
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    
+    //tällä tehdään kartalle klikatut markerit
+    function createMarker(lat, lon) {
+        var marker = L.marker([lat, lon]).addTo(map);
+        marker.markerId = markerCounter;
+        marker.clickCount = 0;
+
+        function delayedPopup() {
+            marker.bindPopup(fetchWeatherData(lat, lon, markerCounter, marker));
+        }
+
+        //pitää olla viivettä tai ei toimi
+        setTimeout(delayedPopup, 50); // Adjust the delay time as needed
+        marker.on('click', function(e) {
+            marker.clickCount++;
+            if (marker.clickCount == 1) {
+                map.removeLayer(marker); // Remove the marker on the second click
+            } else {
+                fetchWeatherData(lat, lon, markerCounter, marker);
             }
         });
+
+        return marker;
+    }
+
     
-</script>
+    </script>
 
 </body>
+
 </html>

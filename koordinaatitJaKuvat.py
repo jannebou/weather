@@ -9,7 +9,7 @@ def getAsemaIDt() -> list:
     kaupungit = []
 
     # luetaan kaupungit tiedostosta "kaupungit.txt"
-    tiedosto = open("weather/kaupungit.txt")
+    tiedosto = open("kaupungit.txt")
     for rivi in tiedosto:
         kaupunki = rivi.split(":")[0].replace("Ã¤","ä")
         kaupungit.append(kaupunki)

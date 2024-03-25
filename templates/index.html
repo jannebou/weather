@@ -27,16 +27,27 @@
         var markerCounter = 0;
         var marker = null;
 
-         /* Oman ikonin luonti. Oma sijainti*/
-         var vihreaIkoni = new L.Icon({
+         /* Oman sijainnin ikoni*/
+         var omaIkoni = new L.Icon({
             iconUrl: 'https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Photos.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
-            iconSize: [50, 81],
+            iconSize: [40, 55],
             iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
+            popupAnchor: [0, -15],
             shadowSize: [41, 41]
             });
 
+
+            /* Kelikameran ikoni*/
+            var kelikameraIkoni = new L.Icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/83/83574.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
+            iconSize: [32, 34],
+            iconAnchor: [12, 41],
+            popupAnchor: [10, -40],
+            shadowSize: [41, 41]
+            });
+            
 
         //käyttäjän sijainti
         if (navigator.geolocation) {
@@ -61,13 +72,13 @@
                                     Ilman paine: ${data["ilman paine"]} mb<br>
                                     Säätila: ${data.säätila}<br>`;
                             map.panTo(latlng);
-                            L.marker(latlng, {icon: vihreaIkoni}).addTo(map).bindPopup(sijaintisaa).openPopup();
+                            L.marker(latlng, {icon: omaIkoni}).addTo(map).bindPopup(sijaintisaa).openPopup();
                             map.setView(latlng, 15);
                         })
                         .catch(error => console.error('Error fetching weather data:', error));
                 },
                 (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
-                { timeout: 20000 } // Timeout in ms
+                { timeout: 20000 } // 2 millisekunnin timeout
             );
         }
 
@@ -77,7 +88,7 @@
             .then(data => {
                 //käydään data läpi
                 data.forEach(function(item) {
-                    var marker = L.marker([item.lat, item.lon]).addTo(map);
+                    var marker = L.marker([item.lat, item.lon], {icon: kelikameraIkoni}).addTo(map);
                     console.log(marker);
                     //kuvalinkki
                     var imageUrl = item.image_url[0];

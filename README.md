@@ -3,7 +3,7 @@
 <p>Flask</p>
 <p>Requests</p>
 
-<p>Muita vaatimuksia:</p>
+<H2>Muita vaatimuksia:</H2>
 <p>Sovellus käyttää https://www.weatherapi.com/ rajapintaa, jonka käyttöön tarvitaan API-avaimen</p>
 <ul>
   <li>API-avaimen saa ilmaiseksi, mutta sivusto vaatii rekisteröinnin</li>
@@ -11,7 +11,7 @@
   <li>API-avain syötetään app.py alussa olevaan "api_key"-muuttujaan</li>
 </ul> 
 
-<p>Käyttö:</p> 
+<H2>Käyttö:</H2> 
 <p>1. Lataa weather repositorio</p>
 <p>2. Lataa vaadittavat kirjastot Flask ja Requests tarvittaessa</p>
 <p>3. Kirjoita saamasi API-avain app.py tiedoston alussa olevaan api_key-muuttujaan.

@@ -5,9 +5,11 @@
 
 <p>Muita vaatimuksia:</p>
 <p>Sovellus käyttää https://www.weatherapi.com/ rajapintaa, jonka käyttöön tarvitaan API-avaimen</p>
-* API-avaimen saa ilmaiseksi, mutta sivusto vaatii rekisteröinnin
-* Ilmaisella API-avaimella voi tehdä miljoona säätietohakua kuukaudessa
-* API-avain syötetään app.py alussa olevaan "api_key"-muuttujaan
+<ul>
+  <li>API-avaimen saa ilmaiseksi, mutta sivusto vaatii rekisteröinnin</li>
+  <li>Ilmaisella API-avaimella voi tehdä miljoona säätietohakua kuukaudessa</li>
+  <li>API-avain syötetään app.py alussa olevaan "api_key"-muuttujaan</li>
+</ul> 
 
 <p>Käyttö:</p> 
 <p>1. Lataa weather repositorio</p>

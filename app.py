@@ -51,10 +51,11 @@ def get_weather(city:str):
 
 #view -> command palette -> python interpreter 3.12 jos ei toimi, Kartta pohja
 @app.route('/')
-def index():
-
+def index():    
+    
     # Renderöi HTML sivua, jossa on kartta
     return render_template('index.html')
+
 
 #tallentaa klikatut koordinaatit
 @app.route('/klikkikoordinaatit', methods=['POST'])

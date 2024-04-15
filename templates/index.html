@@ -96,24 +96,26 @@
 
          /* Oman sijainnin ikoni*/
          var omaIkoni = new L.Icon({
-            iconUrl: 'https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Photos.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
-            iconSize: [40, 55],
+            iconUrl: 'https://www.freeiconspng.com/uploads/clipart--person-icon--cliparts-15.png',
+            iconSize: [25, 30],
             iconAnchor: [12, 41],
-            popupAnchor: [0, -15],
-            shadowSize: [41, 41]
+            popupAnchor: [0, -45],
             });
 
 
             /* Kelikameran ikoni*/
             var kelikameraIkoni = new L.Icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/83/83574.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
             iconSize: [32, 34],
             iconAnchor: [12, 41],
-            popupAnchor: [10, -40],
-            shadowSize: [41, 41]
+            popupAnchor: [10, -40]
             });
+
+
+             // Avaa kelikamerankuvan omaan "tabiin"
+            function openImage(imageUrl) {
+                window.open(imageUrl, '_blank');
+            }
             
 
         //käyttäjän sijainti
@@ -160,9 +162,9 @@
                     //kuvalinkki
                     var imageUrl = item.image_url[0];
                     var popupContent = `
-                    <b>Kelikameran kuva:</a></b><br>
-                    <a href="${imageUrl}" target="_blank"><img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;"></a>
-                    <button onclick="isokuva('${imageUrl}')">Kuva isona</button>`;
+                    <b>Kelikameran kuva:</b><br>
+                    <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">
+                    <button onclick="openImage('${imageUrl}')">Kuva isona</button>`;
                     marker.bindPopup(popupContent, {maxWidth: "auto"});
                 });
             })

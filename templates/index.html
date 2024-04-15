@@ -15,128 +15,12 @@
 <body>
     <div id="map" style="width: 100%; height: 100%;">
     <button id="print-button" onclick="printMarkers()">Print Markers</button> <!-- Button to print markers -->
-
-    <select id="places-dropdown" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
-        <option value="default">Valitse kaupunki</option>
-        <option value="helsinki">Helsinki</option>
-        <option value="tampere">Tampere</option>
-        <option value="espoo">Espoo</option>
-        <option value="oulu">Oulu</option>
-        <option value="turku">Turku</option>
-        <option value="jyväskylä">Jyväskylä</option>
-        <option value="rovaniemi">Rovaniemi</option>
-        <option value="seinäjoki">Seinäjoki</option>
-        <option value="lappeenranta">Lappeenranta</option>
-        <option value="kuopio">Kuopio</option>
-    </select>
-
+    
     <script>
         var map = L.map('map').setView([62.791668, 22.841667], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-
-        var helsinkiCoordinates = [60.1695, 24.9354]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {   
-        var selectedPlace = this.value;
-        if (selectedPlace === 'helsinki') {
-            map.setView(helsinkiCoordinates, 12);
-            createMarker(60.1695, 24.9354);
-        }
-    });
-
-        var tampereCoordinates = [61.4978, 23.7610]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'tampere') {
-            map.setView(tampereCoordinates, 12);
-            createMarker(61.4978, 23.7610); 
-        }
-    });
-
-        var espooCoordinates = [60.2055, 24.6559];
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'espoo') {
-            map.setView(espooCoordinates, 12);
-            createMarker(60.2055, 24.6559);
-        }
-    });
-    
-        var ouluCoordinates = [65.0121, 25.4651]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'oulu') {
-            map.setView(ouluCoordinates, 12);
-            createMarker(65.0121, 25.4651);
-        }
-    });
-
-        var turkuCoordinates = [60.4515, 22.2687]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'turku') {
-            map.setView(turkuCoordinates, 12);
-            createMarker(60.4515, 22.2687);
-        }
-    });
-
-        var jyvaskylaCoordinates = [62.2426, 25.7472]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'jyväskylä') {
-            map.setView(jyvaskylaCoordinates, 12);
-            createMarker(62.2426, 25.7472);
-        }
-    });
-
-    
-        var rovaniemiCoordinates = [66.4970, 25.7247]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'rovaniemi') {
-            map.setView(rovaniemiCoordinates, 12);
-            createMarker(66.4970, 25.7247);
-        }
-    });
-    
-    
-        var seinajokiCoordinates = [62.7903, 22.8407]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'seinäjoki') {
-            map.setView(seinajokiCoordinates, 12);
-            createMarker(62.7903, 22.8407);
-        }
-    });
-
-        var lappeenrantaCoordinates = [61.0586, 28.1865]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'lappeenranta') {
-            map.setView(lappeenrantaCoordinates, 12);
-            createMarker(61.0586, 28.1865);
-        }
-    });
-
-    var kuopioCoordinates = [62.8925, 27.6783]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'kuopio') {
-            map.setView(kuopioCoordinates, 12);
-            createMarker(62.8925, 27.6783);
-        }
-    });
 
         //markerit
         var markers = {};
@@ -145,10 +29,10 @@
 
          /* Oman sijainnin ikoni*/
          var omaIkoni = new L.Icon({
-            iconUrl: 'https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Photos.png',
-            iconSize: [40, 55],
+            iconUrl: 'https://www.freeiconspng.com/uploads/clipart--person-icon--cliparts-15.png',
+            iconSize: [25, 30],
             iconAnchor: [12, 41],
-            popupAnchor: [0, -15]
+            popupAnchor: [0, -45],
             });
 
 
@@ -157,7 +41,7 @@
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/83/83574.png',
             iconSize: [32, 34],
             iconAnchor: [12, 41],
-            popupAnchor: [10, -40]
+            popupAnchor: [10, -40],
             });
             
 
@@ -194,22 +78,28 @@
             );
         }
 
+        // Function to open image URL in a new tab
+function openImage(imageUrl) {
+    window.open(imageUrl, '_blank');
+}
+
         //kelikameroiden tietojen haku, markkerien laitto, ja kuvat popuppiin
         fetch('/kelikamerat')
-            .then(response => response.json())
-            .then(data => {
-                //käydään data läpi
-                data.forEach(function(item) {
-                    var marker = L.marker([item.lat, item.lon], {icon: kelikameraIkoni}).addTo(map);
-                    console.log(marker);
-                    //kuvalinkki
-                    var imageUrl = item.image_url[0];
-                    var popupContent = `
-                    <b>Kelikameran kuva:</b><br>
-                    <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">`;
-                    marker.bindPopup(popupContent, {maxWidth: "auto"});
-                });
-            })
+    .then(response => response.json())
+    .then(data => {
+        //käydään data läpi
+        data.forEach(function(item) {
+            var marker = L.marker([item.lat, item.lon], {icon: kelikameraIkoni}).addTo(map);
+            console.log(marker);
+            //kuvalinkki
+            var imageUrl = item.image_url[0];
+            var popupContent = `
+            <b>Kelikameran kuva:</b><br>
+            <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">
+            <button onclick="openImage('${imageUrl}')">Kuva isona</button>`;
+            marker.bindPopup(popupContent, {maxWidth: "auto"});
+        });
+    })
             .catch(error => {
                 console.error('Error fetching coordinates:', error);
             });

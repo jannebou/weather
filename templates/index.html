@@ -36,23 +36,40 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        /* function disableClickEvents() {
+            // Prevent default click behavior on the document body
+            function clickHandler(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                // Remove the click event listener after the first click
+                document.body.removeEventListener('click', clickHandler, true);
+            }
+        
+            // Add the click event listener to the document body
+            document.body.addEventListener('click', clickHandler, true);
+        } */
+
+        document.getElementById('places-dropdown').addEventListener('click', function(event) {
+            // Stop propagation of the click event
+            event.stopPropagation();
+        });
+
         var helsinkiCoordinates = [60.1695, 24.9354]; 
 
-        document.getElementById('places-dropdown').addEventListener('change', function() {   
+        document.getElementById('places-dropdown').addEventListener('change', function() {    
+        // disableClickEvents();
         var selectedPlace = this.value;
         if (selectedPlace === 'helsinki') {
             map.setView(helsinkiCoordinates, 12);
-            createMarker(60.1695, 24.9354);
         }
     });
 
         var tampereCoordinates = [61.4978, 23.7610]; 
-
+ 
         document.getElementById('places-dropdown').addEventListener('change', function() {
         var selectedPlace = this.value;
         if (selectedPlace === 'tampere') {
-            map.setView(tampereCoordinates, 12);
-            createMarker(61.4978, 23.7610); 
+            map.setView(tampereCoordinates, 12); 
         }
     });
 
@@ -62,7 +79,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'espoo') {
             map.setView(espooCoordinates, 12);
-            createMarker(60.2055, 24.6559);
         }
     });
     
@@ -72,7 +88,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'oulu') {
             map.setView(ouluCoordinates, 12);
-            createMarker(65.0121, 25.4651);
         }
     });
 
@@ -82,7 +97,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'turku') {
             map.setView(turkuCoordinates, 12);
-            createMarker(60.4515, 22.2687);
         }
     });
 
@@ -92,7 +106,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'jyväskylä') {
             map.setView(jyvaskylaCoordinates, 12);
-            createMarker(62.2426, 25.7472);
         }
     });
 
@@ -103,7 +116,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'rovaniemi') {
             map.setView(rovaniemiCoordinates, 12);
-            createMarker(66.4970, 25.7247);
         }
     });
     
@@ -114,7 +126,6 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'seinäjoki') {
             map.setView(seinajokiCoordinates, 12);
-            createMarker(62.7903, 22.8407);
         }
     });
 
@@ -124,17 +135,15 @@
         var selectedPlace = this.value;
         if (selectedPlace === 'lappeenranta') {
             map.setView(lappeenrantaCoordinates, 12);
-            createMarker(61.0586, 28.1865);
         }
     });
 
-    var kuopioCoordinates = [62.8925, 27.6783]; 
+        var kuopioCoordinates = [62.8925, 27.6783]; 
 
         document.getElementById('places-dropdown').addEventListener('change', function() {
         var selectedPlace = this.value;
         if (selectedPlace === 'kuopio') {
             map.setView(kuopioCoordinates, 12);
-            createMarker(62.8925, 27.6783);
         }
     });
 

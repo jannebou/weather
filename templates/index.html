@@ -15,114 +15,113 @@
 <body>
     <div id="map" style="width: 100%; height: 100%;">
     <button id="print-button" onclick="printMarkers()">Print Markers</button> <!-- Button to print markers -->
-    
+
+    <select id="places-dropdown" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
+        <option value="default">Valitse kaupunki</option>
+        <option value="helsinki">Helsinki</option>
+        <option value="tampere">Tampere</option>
+        <option value="espoo">Espoo</option>
+        <option value="oulu">Oulu</option>
+        <option value="turku">Turku</option>
+        <option value="jyväskylä">Jyväskylä</option>
+        <option value="rovaniemi">Rovaniemi</option>
+        <option value="seinäjoki">Seinäjoki</option>
+        <option value="lappeenranta">Lappeenranta</option>
+        <option value="kuopio">Kuopio</option>
+    </select>
+
     <script>
         var map = L.map('map').setView([62.791668, 22.841667], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        //kaupunkien koordinaatit
+        var tampereCoordinates = [61.4978, 23.7610];
+        var espooCoordinates = [60.2055, 24.6559];
+        var ouluCoordinates = [65.0121, 25.4651]; 
+        var turkuCoordinates = [60.4515, 22.2687]; 
+        var jyvaskylaCoordinates = [62.2426, 25.7472]; 
+        var rovaniemiCoordinates = [66.4970, 25.7247]; 
+        var seinajokiCoordinates = [62.7903, 22.8407]; 
+        var lappeenrantaCoordinates = [61.0586, 28.1865]; 
+        var kuopioCoordinates = [62.8925, 27.6783]; 
         var helsinkiCoordinates = [60.1695, 24.9354]; 
 
-        document.getElementById('places-dropdown').addEventListener('change', function() {   
+        //drowdown-menu josta voi valita kaupungin johon zoomaa ja hakee säätiedot saakaupunki-funktiolla
+        document.getElementById('places-dropdown').addEventListener('change', function() {
         var selectedPlace = this.value;
         if (selectedPlace === 'helsinki') {
             map.setView(helsinkiCoordinates, 12);
-            createMarker(60.1695, 24.9354);
-        }
+            saakaupunki(helsinkiCoordinates);
+
+        } else if (selectedPlace === 'tampere') {
+            map.setView(tampereCoordinates, 12); // Set view to Tampere
+            saakaupunki(tampereCoordinates);
+
+        } else if (selectedPlace === 'espoo') {
+            map.setView(espooCoordinates, 12); // Set view to Tampere
+            saakaupunki(espooCoordinates);
+
+        } else if (selectedPlace === 'oulu') {
+            map.setView(ouluCoordinates, 12); // Set view to Tampere
+            saakaupunki(ouluCoordinates);
+
+        } else if (selectedPlace === 'turku') {
+            map.setView(turkuCoordinates, 12); // Set view to Tampere
+            saakaupunki(turkuCoordinates);
+
+        } else if (selectedPlace === 'jyväskylä') {
+            map.setView(jyvaskylaCoordinates, 12); // Set view to Tampere
+            saakaupunki(jyvaskylaCoordinates);
+
+        } else if (selectedPlace === 'rovaniemi') {
+            map.setView(rovaniemiCoordinates, 12); // Set view to Tampere
+            saakaupunki(rovaniemiCoordinates);
+            
+        } else if (selectedPlace === 'seinäjoki') {
+            map.setView(seinajokiCoordinates, 12); // Set view to Tampere
+            saakaupunki(seinajokiCoordinates);
+
+        } else if (selectedPlace === 'lappeenranta') {
+            map.setView(lappeenrantaCoordinates, 12); // Set view to Tampere
+            saakaupunki(lappeenrantaCoordinates);
+
+        } else if (selectedPlace === 'kuopio') {
+            map.setView(kuopioCoordinates, 12); // Set view to Tampere
+            saakaupunki(kuopioCoordinates);
+        } 
     });
 
-        var tampereCoordinates = [61.4978, 23.7610]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'tampere') {
-            map.setView(tampereCoordinates, 12);
-            createMarker(61.4978, 23.7610); 
-        }
+    //estää ettei klikit mene listan läpi
+    document.getElementById('places-dropdown').addEventListener('click', function(event) {
+        event.stopPropagation();
     });
 
-        var espooCoordinates = [60.2055, 24.6559];
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'espoo') {
-            map.setView(espooCoordinates, 12);
-            createMarker(60.2055, 24.6559);
-        }
-    });
-    
-        var ouluCoordinates = [65.0121, 25.4651]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'oulu') {
-            map.setView(ouluCoordinates, 12);
-            createMarker(65.0121, 25.4651);
-        }
-    });
-
-        var turkuCoordinates = [60.4515, 22.2687]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'turku') {
-            map.setView(turkuCoordinates, 12);
-            createMarker(60.4515, 22.2687);
-        }
-    });
-
-        var jyvaskylaCoordinates = [62.2426, 25.7472]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'jyväskylä') {
-            map.setView(jyvaskylaCoordinates, 12);
-            createMarker(62.2426, 25.7472);
-        }
-    });
-
-    
-        var rovaniemiCoordinates = [66.4970, 25.7247]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'rovaniemi') {
-            map.setView(rovaniemiCoordinates, 12);
-            createMarker(66.4970, 25.7247);
-        }
-    });
-    
-    
-        var seinajokiCoordinates = [62.7903, 22.8407]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'seinäjoki') {
-            map.setView(seinajokiCoordinates, 12);
-            createMarker(62.7903, 22.8407);
-        }
-    });
-
-        var lappeenrantaCoordinates = [61.0586, 28.1865]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'lappeenranta') {
-            map.setView(lappeenrantaCoordinates, 12);
-            createMarker(61.0586, 28.1865);
-        }
-    });
-
-    var kuopioCoordinates = [62.8925, 27.6783]; 
-
-        document.getElementById('places-dropdown').addEventListener('change', function() {
-        var selectedPlace = this.value;
-        if (selectedPlace === 'kuopio') {
-            map.setView(kuopioCoordinates, 12);
-            createMarker(62.8925, 27.6783);
-        }
-    });
+    //lista käyttää tätä funktiota, koska se ei pidä markerien järjestyksestä huolta
+    //eli normaali funktio tähän ei toimi ilman sen logiikan muuttamista
+    function saakaupunki(kaupunki) {
+        var lat = kaupunki[0];
+        var lon = kaupunki[1];
+        fetch(`/kayttajasaatiedot?lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                        //markerin laitto+säätiedot
+                            var latlng = [lat, lon];
+                            var sijaintisaa = `
+                                    <b>${data.nimi}</b><br>
+                                    Lämpötila: ${data.lämpötila}°C<br>
+                                    Tuntuu kuin: ${data["tuntuu kuin"]}°C<br>
+                                    Näkyvyys: ${data.näkyvyys} km<br>
+                                    Tuuli: ${data.tuuli} km/h<br>
+                                    Tuulen suunta: ${data["tuulen suunta"]}<br>
+                                    Ilman paine: ${data["ilman paine"]} mb<br>
+                                    Säätila: ${data.säätila}<br>`;
+                            map.panTo(latlng);
+                            L.marker(latlng).addTo(map).bindPopup(sijaintisaa).openPopup();
+                        })
+                        .catch(error => console.error('Error fetching weather data:', error));
+    }
 
         //markerit
         var markers = {};
@@ -131,19 +130,23 @@
 
          /* Oman sijainnin ikoni*/
          var omaIkoni = new L.Icon({
-            iconUrl: 'https://www.freeiconspng.com/uploads/clipart--person-icon--cliparts-15.png',
-            iconSize: [25, 30],
+            iconUrl: 'https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Photos.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
+            iconSize: [40, 55],
             iconAnchor: [12, 41],
-            popupAnchor: [0, -45],
+            popupAnchor: [0, -15],
+            shadowSize: [41, 41]
             });
 
 
             /* Kelikameran ikoni*/
             var kelikameraIkoni = new L.Icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/83/83574.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // voi vaihtaa omiin kuviin nämä 2 riviä
             iconSize: [32, 34],
             iconAnchor: [12, 41],
             popupAnchor: [10, -40],
+            shadowSize: [41, 41]
             });
             
 
@@ -154,7 +157,7 @@
                     var lat = position.coords.latitude;
                     var lon = position.coords.longitude;
 
-                //lähetä koordinaatit flaskiin(ne on numeroita, joten käytä float tallentamiseen)
+                //lähetä koordinaatit flaskiin(ne on numeroita ei string)
                     fetch(`/kayttajasaatiedot?lat=${lat}&lon=${lon}`)
                         .then(response => response.json())
                         .then(data => {
@@ -176,32 +179,27 @@
                         .catch(error => console.error('Error fetching weather data:', error));
                 },
                 (err) => console.warn(`Geolocation error (${err.code}): ${err.message}`),
-                { timeout: 20000 } // 2 millisekunnin timeout
+                { timeout: 20000 } //2 millisekunnin timeout
             );
         }
 
-        // Function to open image URL in a new tab
-function openImage(imageUrl) {
-    window.open(imageUrl, '_blank');
-}
-
         //kelikameroiden tietojen haku, markkerien laitto, ja kuvat popuppiin
         fetch('/kelikamerat')
-    .then(response => response.json())
-    .then(data => {
-        //käydään data läpi
-        data.forEach(function(item) {
-            var marker = L.marker([item.lat, item.lon], {icon: kelikameraIkoni}).addTo(map);
-            console.log(marker);
-            //kuvalinkki
-            var imageUrl = item.image_url[0];
-            var popupContent = `
-            <b>Kelikameran kuva:</b><br>
-            <img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">
-            <button onclick="openImage('${imageUrl}')">Kuva isona</button>`;
-            marker.bindPopup(popupContent, {maxWidth: "auto"});
-        });
-    })
+            .then(response => response.json())
+            .then(data => {
+                //käydään data läpi
+                data.forEach(function(item) {
+                    var marker = L.marker([item.lat, item.lon], {icon: kelikameraIkoni}).addTo(map);
+                    console.log(marker);
+                    //kuvalinkki
+                    var imageUrl = item.image_url[0];
+                    var popupContent = `
+                    <b>Kelikameran kuva:</a></b><br>
+                    <a href="${imageUrl}" target="_blank"><img src="${imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;"></a>
+                    <button onclick="openImage('${imageUrl}')">Kuva isona</button>`;
+                    marker.bindPopup(popupContent, {maxWidth: "auto"});
+                });
+            })
             .catch(error => {
                 console.error('Error fetching coordinates:', error);
             });
@@ -285,11 +283,11 @@ function openImage(imageUrl) {
         }
 
         //pitää olla viivettä tai ei toimi
-        setTimeout(delayedPopup, 50); // Adjust the delay time as needed
+        setTimeout(delayedPopup, 50);
         marker.on('click', function(e) {
             marker.clickCount++;
             if (marker.clickCount == 1) {
-                map.removeLayer(marker); // Remove the marker on the second click
+                map.removeLayer(marker); //poistetaan marker jos sitä painetaan uudelleen
             } else {
                 fetchWeatherData(lat, lon, markerCounter, marker);
             }
@@ -302,5 +300,4 @@ function openImage(imageUrl) {
     </script>
 
 </body>
-
 </html>
